@@ -23,6 +23,9 @@ def checkstyleVersion = "6.19"
 def pmdVersion = "5.5.4"
 def findbugsVersion = "3.0.1"
 
+sourceCompatibility = "1.7"
+targetCompatibility = "1.7"
+
 buildscript {
     repositories {
         mavenCentral()
