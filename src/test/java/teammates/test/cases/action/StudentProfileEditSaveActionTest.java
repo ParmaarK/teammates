@@ -28,13 +28,13 @@ public class StudentProfileEditSaveActionTest extends BaseActionTest {
     @Override
     @Test
     public void testExecuteAndPostProcess() throws Exception {
-        AccountAttributes student = dataBundle.accounts.get("student1InCourse1");
+        AccountAttributes student = typicalBundle.accounts.get("student1InCourse1");
 
         testActionWithInvalidParameters(student);
         testActionSuccess(student, "Typical Case");
         testActionInMasqueradeMode(student);
 
-        student = dataBundle.accounts.get("student1InTestingSanitizationCourse");
+        student = typicalBundle.accounts.get("student1InTestingSanitizationCourse");
         // simulate sanitization that occurs before persistence
         student.sanitizeForSaving();
         testActionSuccess(student, "Typical case: attempted script injection");
@@ -203,7 +203,7 @@ public class StudentProfileEditSaveActionTest extends BaseActionTest {
     }
 
     private String[] createInvalidParamsForProfileWithScriptInjection() {
-        return new String[]{
+        return new String[] {
                 Const.ParamsNames.STUDENT_SHORT_NAME, "short%<script>alert(\"was here\");</script>",
                 Const.ParamsNames.STUDENT_PROFILE_EMAIL, "<script>alert(\"was here\");</script>",
                 Const.ParamsNames.STUDENT_PROFILE_INSTITUTION, "<script>alert(\"was here\");</script>",

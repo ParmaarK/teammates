@@ -1,4 +1,4 @@
-<%@ tag description="instructorFeedbackResultsTop - Filter Panel" %>
+<%@ tag description="instructorFeedbackResultsTop - Filter Panel" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib tagdir="/WEB-INF/tags/instructor/results" prefix="r" %>
@@ -46,7 +46,7 @@
                   </c:if>
                 </c:forEach>
                 <c:if test="${filterPanel.noneSectionSelected}">
-                  <%=Const.NO_SPECIFIC_RECIPIENT%>
+                  <%=Const.NO_SPECIFIC_SECTION%>
                 </c:if>
               </div>
             </div>
@@ -83,7 +83,7 @@
     <div class="row">
       <div class="col-md-offset-10 col-md-2">
         <button id="editBtn" type="button" class="btn btn-primary btn-block"
-                data-toggle="modal" data-target="#editModal">
+            data-toggle="modal" data-target="#editModal">
           Edit View
         </button>
       </div>

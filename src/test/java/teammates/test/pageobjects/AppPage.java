@@ -173,8 +173,9 @@ public abstract class AppPage {
      * Fails if the page content does not match the content of the expected login page.
      */
     public static LoginPage createCorrectLoginPageType(Browser browser) {
-        return getNewPageInstance(browser, TestProperties.isDevServer() ? DevServerLoginPage.class
-                                                                        : GoogleLoginPage.class);
+        Class<? extends LoginPage> cls =
+                TestProperties.isDevServer() ? DevServerLoginPage.class : GoogleLoginPage.class;
+        return getNewPageInstance(browser, cls);
     }
 
     /**
@@ -497,6 +498,7 @@ public abstract class AppPage {
         String preparedContent = content.replace("\n", "<br>");
         executeScript("  if (typeof tinyMCE !== 'undefined') {"
                       + "    tinyMCE.get('" + id + "').setContent('" + preparedContent + "\t\t');"
+                      + "    tinyMCE.get('" + id + "').focus();" // for consistent HTML verification across browsers
                       + "}");
     }
 
@@ -518,6 +520,11 @@ public abstract class AppPage {
 
     protected String getTextBoxValue(WebElement textBox) {
         return textBox.getAttribute("value");
+    }
+
+    protected boolean checkEmptyTextBoxValue(WebElement textBox) {
+        String textInsideInputBox = textBox.getAttribute("value");
+        return textInsideInputBox.isEmpty();
     }
 
     /**

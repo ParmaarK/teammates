@@ -57,6 +57,11 @@ public class FeedbackContributionQuestionDetails extends FeedbackQuestionDetails
     }
 
     @Override
+    public List<String> getInstructions() {
+        return null;
+    }
+
+    @Override
     public String getQuestionTypeDisplayName() {
         return Const.FeedbackQuestionTypeNames.CONTRIB;
     }
@@ -406,9 +411,7 @@ public class FeedbackContributionQuestionDetails extends FeedbackQuestionDetails
 
         }
 
-        for (Map.Entry<String, String> entry : sortedMap.entrySet()) {
-            contribFragments.append(entry.getValue());
-        }
+        sortedMap.forEach((key, value) -> contribFragments.append(value));
 
         String csvPointsExplanation =
                 "In the points given below, an equal share is equal to 100 points. "
@@ -477,9 +480,8 @@ public class FeedbackContributionQuestionDetails extends FeedbackQuestionDetails
             Map<String, List<String>> teamMembersEmail,
             Map<String, TeamEvalResult> teamResults) {
         Map<String, StudentResultSummary> studentResults = new LinkedHashMap<>();
-        for (Map.Entry<String, TeamEvalResult> entry : teamResults.entrySet()) {
-            TeamEvalResult teamResult = entry.getValue();
-            List<String> teamEmails = teamMembersEmail.get(entry.getKey());
+        teamResults.forEach((key, teamResult) -> {
+            List<String> teamEmails = teamMembersEmail.get(key);
             int i = 0;
             for (String studentEmail : teamEmails) {
                 StudentResultSummary summary = new StudentResultSummary();
@@ -490,7 +492,7 @@ public class FeedbackContributionQuestionDetails extends FeedbackQuestionDetails
 
                 i++;
             }
-        }
+        });
         return studentResults;
     }
 
@@ -591,7 +593,7 @@ public class FeedbackContributionQuestionDetails extends FeedbackQuestionDetails
                 responses.add(response);
             }
         }
-        Collections.sort(responses, bundle.compareByGiverRecipientQuestion);
+        responses.sort(bundle.compareByGiverRecipientQuestion);
         return responses;
     }
 

@@ -28,14 +28,14 @@ public class InstructorFeedbackCopyActionTest extends BaseActionTest {
 
     @BeforeMethod
     public void refreshTestData() {
-        dataBundle = getTypicalDataBundle();
-        removeAndRestoreTypicalDataBundle();
+        super.prepareTestData();
     }
 
+    @Override
     @Test
     public void testAccessControl() {
 
-        String[] params = new String[]{
+        String[] params = new String[] {
                 Const.ParamsNames.COPIED_FEEDBACK_SESSION_NAME, "Copied Session",
                 Const.ParamsNames.COPIED_COURSE_ID, "idOfTypicalCourse1",
                 Const.ParamsNames.FEEDBACK_SESSION_NAME, "First feedback session",
@@ -50,7 +50,7 @@ public class InstructorFeedbackCopyActionTest extends BaseActionTest {
     @Test
     public void testExecuteAndPostProcess() throws Exception {
         //TODO: find a way to test status message from session
-        InstructorAttributes instructor1ofCourse1 = dataBundle.instructors.get("instructor1OfCourse1");
+        InstructorAttributes instructor1ofCourse1 = typicalBundle.instructors.get("instructor1OfCourse1");
         String expectedString = "";
         String teammatesLogMessage =
                 "TEAMMATESLOG|||instructorFeedbackCopy|||instructorFeedbackCopy|||true|||Instructor|||"
@@ -65,7 +65,7 @@ public class InstructorFeedbackCopyActionTest extends BaseActionTest {
 
         ______TS("Typical case");
 
-        String[] params = new String[]{
+        String[] params = new String[] {
                 Const.ParamsNames.COPIED_FEEDBACK_SESSION_NAME, "Copied Session",
                 Const.ParamsNames.COPIED_COURSE_ID, "idOfTypicalCourse1",
                 Const.ParamsNames.FEEDBACK_SESSION_NAME, "First feedback session",
@@ -99,7 +99,7 @@ public class InstructorFeedbackCopyActionTest extends BaseActionTest {
 
         ______TS("Error: Trying to copy with existing feedback session name");
 
-        params = new String[]{
+        params = new String[] {
                 Const.ParamsNames.COPIED_FEEDBACK_SESSION_NAME, "Second feedback session",
                 Const.ParamsNames.COPIED_COURSE_ID, "idOfTypicalCourse1",
                 Const.ParamsNames.FEEDBACK_SESSION_NAME, "First feedback session",
@@ -127,7 +127,7 @@ public class InstructorFeedbackCopyActionTest extends BaseActionTest {
 
         ______TS("Error: Trying to copy with invalid feedback session name");
 
-        params = new String[]{
+        params = new String[] {
                 Const.ParamsNames.COPIED_FEEDBACK_SESSION_NAME, "",
                 Const.ParamsNames.COPIED_COURSE_ID, "idOfTypicalCourse1",
                 Const.ParamsNames.FEEDBACK_SESSION_NAME, "First feedback session",
@@ -161,7 +161,7 @@ public class InstructorFeedbackCopyActionTest extends BaseActionTest {
         String adminUserId = "admin.user";
         gaeSimulation.loginAsAdmin(adminUserId);
 
-        params = new String[]{
+        params = new String[] {
                 Const.ParamsNames.COPIED_FEEDBACK_SESSION_NAME, "Second copied feedback session",
                 Const.ParamsNames.COPIED_COURSE_ID, "idOfTypicalCourse1",
                 Const.ParamsNames.FEEDBACK_SESSION_NAME, "Second feedback session",

@@ -1,4 +1,4 @@
-<%@ tag description="studentHome - Course table" %>
+<%@ tag description="studentHome - Course table" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib tagdir="/WEB-INF/tags/student/home" prefix="home" %>
 <%@ tag import="teammates.common.util.Const" %>
@@ -10,7 +10,8 @@
         <tr>
           <th>Session Name</th>
           <th>Deadline</th>
-          <th>Status</th>
+          <th>Submissions</th>
+          <th>Responses</th>
           <th class="studentHomeActions">Action(s)</th>
         </tr>
       </thead>
@@ -19,8 +20,13 @@
           <td>${sessionRow.name}</td>
           <td>${sessionRow.endTime}</td>
           <td>
-            <span data-toggle="tooltip" data-placement="top" title="${sessionRow.tooltip}">
-              ${sessionRow.status}
+            <span data-toggle="tooltip" data-placement="top" title="${sessionRow.submissionsTooltip}">
+              ${sessionRow.submissionStatus}
+            </span>
+          </td>
+          <td>
+            <span data-toggle="tooltip" data-placement="top" title="${sessionRow.publishedTooltip}">
+              ${sessionRow.publishedStatus}
             </span>
           </td>
           <td class="studentHomeActions">

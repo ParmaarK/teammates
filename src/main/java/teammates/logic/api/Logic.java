@@ -363,18 +363,6 @@ public class Logic {
      * * All parameters are non-null.
      * @return Empty list if none found.
      */
-    public List<InstructorAttributes> getInstructorsForEmail(String email) {
-
-        Assumption.assertNotNull(email);
-
-        return instructorsLogic.getInstructorsForEmail(email);
-    }
-
-    /**
-     * Preconditions: <br>
-     * * All parameters are non-null.
-     * @return Empty list if none found.
-     */
     public List<InstructorAttributes> getInstructorsForCourse(String courseId) {
 
         Assumption.assertNotNull(courseId);
@@ -1981,6 +1969,15 @@ public class Logic {
     }
 
     /**
+     * Removes document for the comment by given id.
+     *
+     * @see FeedbackResponseCommentsLogic#deleteDocumentByCommentId(long)
+     */
+    public void deleteDocumentByCommentId(long commentId) {
+        feedbackResponseCommentsLogic.deleteDocumentByCommentId(commentId);
+    }
+
+    /**
      * Search for FeedbackResponseComment. Preconditions: all parameters are non-null.
      * @param instructors   a list of InstructorAttributes associated to a googleId,
      *                      used for filtering of search result
@@ -2013,6 +2010,15 @@ public class Logic {
     public void deleteFeedbackResponseComment(FeedbackResponseCommentAttributes feedbackResponseComment) {
         Assumption.assertNotNull(feedbackResponseComment);
         feedbackResponseCommentsLogic.deleteFeedbackResponseComment(feedbackResponseComment);
+    }
+
+    /**
+     * Preconditions: <br>
+     * * Id of comment is not null.
+     */
+    public void deleteFeedbackResponseCommentById(Long commentId) {
+        Assumption.assertNotNull(commentId);
+        feedbackResponseCommentsLogic.deleteFeedbackResponseCommentById(commentId);
     }
 
     /**
@@ -2106,7 +2112,7 @@ public class Logic {
     /**
      * Gets an admin email by subject and createDate.
      *
-     * @see AdminEmailsLogic#getAdminEmail(String, Date).
+     * @see AdminEmailsLogic#getAdminEmail(String, Date)
      */
     public AdminEmailAttributes getAdminEmail(String subject, Date createDate) {
         Assumption.assertNotNull(subject);

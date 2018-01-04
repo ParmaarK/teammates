@@ -13,7 +13,7 @@ import teammates.test.pageobjects.QUnitPage;
  */
 public class AllJsTests extends BaseUiTestCase {
 
-    private static final float MIN_COVERAGE_REQUIREMENT = 40;
+    private static final float MIN_COVERAGE_REQUIREMENT = 39;
 
     private QUnitPage page;
 
@@ -41,7 +41,7 @@ public class AllJsTests extends BaseUiTestCase {
         // Some tests such as date-checking behave differently in Firefox and Chrome.
         int expectedFailedCases = "firefox".equals(TestProperties.BROWSER) ? 0 : 4;
         assertEquals(expectedFailedCases, failedCases);
-        assertTrue(totalCases != 0);
+        assertTrue(totalCases > 0);
 
         print("As expected, " + expectedFailedCases + " failed tests out of " + totalCases + " tests.");
 

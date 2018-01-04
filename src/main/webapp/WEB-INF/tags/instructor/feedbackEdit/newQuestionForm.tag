@@ -1,4 +1,4 @@
-<%@ tag description="instructorFeedbacks - new feedback question form" %>
+<%@ tag description="instructorFeedbacks - new feedback question form" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ tag import="teammates.common.util.Const" %>
 <%@ tag import="teammates.common.util.FieldValidator" %>
@@ -13,7 +13,7 @@
 <form id="form_editquestion-${NEW_QUESTION}" class="form-horizontal form_question tally-checkboxes" role="form" method="post"
     action="<%= Const.ActionURIs.INSTRUCTOR_FEEDBACK_QUESTION_ADD %>"
     name="form_addquestions" data-qnnumber="${NEW_QUESTION}">
-  <div class="well well-plain inputTable" id="addNewQuestionTable">
+  <div class="well well-plain" id="addNewQuestionTable">
 
     <div class="row">
       <div class="col-sm-offset-3 col-sm-9">

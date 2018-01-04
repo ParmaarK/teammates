@@ -1,4 +1,4 @@
-<%@ tag description="instructorFeedbacks - feedback sessions table/list" %>
+<%@ tag description="instructorFeedbacks - feedback sessions table/list" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib tagdir="/WEB-INF/tags/instructor/feedbacks" prefix="tif" %>
 <%@ tag import="teammates.common.util.Const" %>
@@ -15,7 +15,8 @@
       <th id="button_sortname" class="button-sort-none session-name-table-width toggle-sort">
         Session Name <span class="icon-sort unsorted"></span>
       </th>
-      <th>Status</th>
+      <th>Submissions</th>
+      <th>Responses</th>
       <th>
         <span title="<%= Const.Tooltips.FEEDBACK_SESSION_RESPONSE_RATE %>" data-toggle="tooltip" data-placement="top">
           Response Rate
@@ -31,8 +32,13 @@
           <td>${sessionRow.courseId}</td>
           <td>${sessionRow.name}</td>
           <td>
-            <span title="${sessionRow.tooltip}" data-toggle="tooltip" data-placement="top">
-              ${sessionRow.status}
+            <span title="${sessionRow.submissionsTooltip}" data-toggle="tooltip" data-placement="top">
+              ${sessionRow.submissionStatus}
+            </span>
+          </td>
+          <td>
+            <span title="${sessionRow.publishedTooltip}" data-toggle="tooltip" data-placement="top">
+              ${sessionRow.publishedStatus}
             </span>
           </td>
           <td class="session-response-for-test">

@@ -29,13 +29,13 @@ public class InstructorFeedbackQuestionCopyActionTest extends BaseActionTest {
 
     @BeforeMethod
     public void refreshTestData() {
-        dataBundle = getTypicalDataBundle();
-        removeAndRestoreTypicalDataBundle();
+        super.prepareTestData();
     }
 
+    @Override
     @Test
     public void testAccessControl() {
-        String[] params = new String[]{
+        String[] params = new String[] {
                 Const.ParamsNames.FEEDBACK_SESSION_NAME, "First feedback session",
                 Const.ParamsNames.COURSE_ID, "idOfTypicalCourse1"
         };
@@ -47,7 +47,7 @@ public class InstructorFeedbackQuestionCopyActionTest extends BaseActionTest {
     @Override
     @Test
     public void testExecuteAndPostProcess() {
-        InstructorAttributes instructor1ofCourse1 = dataBundle.instructors.get("instructor1OfCourse1");
+        InstructorAttributes instructor1ofCourse1 = typicalBundle.instructors.get("instructor1OfCourse1");
 
         ______TS("Not enough parameters");
 
@@ -59,7 +59,7 @@ public class InstructorFeedbackQuestionCopyActionTest extends BaseActionTest {
 
         ______TS("Typical case");
 
-        FeedbackSessionAttributes session1 = dataBundle.feedbackSessions.get("session1InCourse1");
+        FeedbackSessionAttributes session1 = typicalBundle.feedbackSessions.get("session1InCourse1");
         FeedbackQuestionAttributes question1 = FeedbackQuestionsLogic
                                                    .inst()
                                                    .getFeedbackQuestion(session1.getFeedbackSessionName(),
@@ -69,7 +69,7 @@ public class InstructorFeedbackQuestionCopyActionTest extends BaseActionTest {
                                                    .getFeedbackQuestion(session1.getFeedbackSessionName(),
                                                                         session1.getCourseId(), 2);
 
-        String[] params = new String[]{
+        String[] params = new String[] {
                 Const.ParamsNames.FEEDBACK_SESSION_NAME, "Second feedback session",
                 Const.ParamsNames.COURSE_ID, "idOfTypicalCourse1",
                 Const.ParamsNames.FEEDBACK_SESSION_NAME + "-0", question1.getFeedbackSessionName(),
@@ -112,13 +112,13 @@ public class InstructorFeedbackQuestionCopyActionTest extends BaseActionTest {
         ______TS("Question text requires sanitization");
 
         FeedbackSessionAttributes sanitizationSession =
-                dataBundle.feedbackSessions.get("session1InTestingSanitizationCourse");
+                typicalBundle.feedbackSessions.get("session1InTestingSanitizationCourse");
         question1 = FeedbackQuestionsLogic
                 .inst()
                 .getFeedbackQuestion(sanitizationSession.getFeedbackSessionName(),
                         sanitizationSession.getCourseId(), 1);
 
-        params = new String[]{
+        params = new String[] {
                 Const.ParamsNames.FEEDBACK_SESSION_NAME, "Second feedback session",
                 Const.ParamsNames.COURSE_ID, "idOfTypicalCourse1",
                 Const.ParamsNames.FEEDBACK_QUESTION_ID + "-0", question1.getId()
@@ -153,7 +153,7 @@ public class InstructorFeedbackQuestionCopyActionTest extends BaseActionTest {
 
         ______TS("Error: Indicate no questions to be copied");
 
-        params = new String[]{
+        params = new String[] {
                 Const.ParamsNames.FEEDBACK_SESSION_NAME, "Second feedback session",
                 Const.ParamsNames.COURSE_ID, "idOfTypicalCourse1"
         };
@@ -186,7 +186,7 @@ public class InstructorFeedbackQuestionCopyActionTest extends BaseActionTest {
         String adminUserId = "admin.user";
         gaeSimulation.loginAsAdmin(adminUserId);
 
-        params = new String[]{
+        params = new String[] {
                 Const.ParamsNames.FEEDBACK_SESSION_NAME, "Second feedback session",
                 Const.ParamsNames.COURSE_ID, "idOfTypicalCourse1",
                 Const.ParamsNames.FEEDBACK_SESSION_NAME + "-0", question3.getFeedbackSessionName(),

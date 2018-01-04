@@ -576,6 +576,26 @@ public class EmailGenerator {
         return email;
     }
 
+    /**
+     * Generates the course registered email for the user with the given details in {@code course}.
+     */
+    public EmailWrapper generateUserCourseRegisteredEmail(
+            String name, String emailAddress, String googleId, boolean isInstructor, CourseAttributes course) {
+        String emailBody = Templates.populateTemplate(EmailTemplates.USER_COURSE_REGISTER,
+                "${userName}", SanitizationHelper.sanitizeForHtml(name),
+                "${userType}", isInstructor ? "an instructor" : "a student",
+                "${courseId}", SanitizationHelper.sanitizeForHtml(course.getId()),
+                "${courseName}", SanitizationHelper.sanitizeForHtml(course.getName()),
+                "${googleId}", SanitizationHelper.sanitizeForHtml(googleId),
+                "${supportEmail}", Config.SUPPORT_EMAIL);
+
+        EmailWrapper email = getEmptyEmailAddressedToEmail(emailAddress);
+        email.setSubject(String.format(EmailType.USER_COURSE_REGISTER.getSubject(),
+                course.getName(), course.getId()));
+        email.setContent(emailBody);
+        return email;
+    }
+
     private String fillUpStudentJoinFragment(StudentAttributes student, String emailBody) {
         String joinUrl = Config.getAppUrl(student.getRegistrationUrl()).toAbsoluteString();
 

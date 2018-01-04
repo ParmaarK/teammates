@@ -1,11 +1,11 @@
-<%@ tag description="instructorFeedbacks - feedback sessions preview form" %>
+<%@ tag description="instructorFeedbacks - feedback sessions preview form" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ tag import="teammates.common.util.Const" %>
 
 <%@ attribute name="previewForm" type="teammates.ui.template.FeedbackSessionPreviewForm" required="true"%>
 
-<div class="well well-plain inputTable" id="questionPreviewTable">
+<div class="well well-plain" id="questionPreviewTable">
   <div class="row">
     <form class="form-horizontal">
       <label class="control-label col-xs-6 col-md-2 tablet-align-left text-right">

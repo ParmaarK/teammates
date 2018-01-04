@@ -1,4 +1,4 @@
-<%@ tag description="Student Message of the day" %>
+<%@ tag description="Student Message of the day" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ tag import="teammates.common.util.Config" %>
 <c:set var="motdUrl" value="<%= Config.STUDENT_MOTD_URL %>" />
@@ -6,7 +6,7 @@
   <div id="student-motd-wrapper">
     <input type="hidden" id="motd-url" value="<c:out value="${motdUrl}" />">
     <script type="text/javascript" src="/js/studentMotd.js" defer></script>
-    <div class="container theme-showcase" id="student-motd-container">
+    <div class="theme-showcase" id="student-motd-container">
       <div class="row">
         <div class="col-sm-12">
           <div class="panel panel-default">

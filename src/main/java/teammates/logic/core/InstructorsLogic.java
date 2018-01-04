@@ -1,7 +1,6 @@
 package teammates.logic.core;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import teammates.common.datatransfer.InstructorSearchResultBundle;
@@ -96,7 +95,7 @@ public final class InstructorsLogic {
     }
 
     public void setArchiveStatusOfInstructor(String googleId, String courseId, boolean archiveStatus)
-           throws InvalidParametersException, EntityDoesNotExistException {
+            throws InvalidParametersException, EntityDoesNotExistException {
 
         InstructorAttributes instructor = instructorsDb.getInstructorForGoogleId(courseId, googleId);
         instructor.isArchived = archiveStatus;
@@ -120,7 +119,7 @@ public final class InstructorsLogic {
 
     public List<InstructorAttributes> getInstructorsForCourse(String courseId) {
         List<InstructorAttributes> instructorReturnList = instructorsDb.getInstructorsForCourse(courseId);
-        Collections.sort(instructorReturnList, InstructorAttributes.compareByName);
+        instructorReturnList.sort(InstructorAttributes.compareByName);
 
         return instructorReturnList;
     }
@@ -143,11 +142,6 @@ public final class InstructorsLogic {
         InstructorAttributes instructor = getInstructorForEmail(courseId, email);
 
         return StringHelper.encrypt(instructor.key);
-    }
-
-    public List<InstructorAttributes> getInstructorsForEmail(String email) {
-
-        return instructorsDb.getInstructorsForEmail(email);
     }
 
     /**

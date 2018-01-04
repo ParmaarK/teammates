@@ -1,7 +1,6 @@
 package teammates.logic.core;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -13,11 +12,9 @@ import teammates.common.datatransfer.FeedbackParticipantType;
 import teammates.common.datatransfer.TeamDetailsBundle;
 import teammates.common.datatransfer.attributes.CourseAttributes;
 import teammates.common.datatransfer.attributes.FeedbackQuestionAttributes;
-import teammates.common.datatransfer.attributes.FeedbackResponseAttributes;
 import teammates.common.datatransfer.attributes.FeedbackSessionAttributes;
 import teammates.common.datatransfer.attributes.InstructorAttributes;
 import teammates.common.datatransfer.attributes.StudentAttributes;
-import teammates.common.datatransfer.questions.FeedbackQuestionDetails;
 import teammates.common.exception.EntityDoesNotExistException;
 import teammates.common.exception.InvalidParametersException;
 import teammates.common.util.Assumption;
@@ -133,7 +130,7 @@ public final class FeedbackQuestionsLogic {
         }
         List<FeedbackQuestionAttributes> questions =
                 fqDb.getFeedbackQuestionsForSession(feedbackSessionName, courseId);
-        Collections.sort(questions);
+        questions.sort(null);
 
         if (questions.size() > 1 && !areQuestionNumbersConsistent(questions)) {
             log.severe(courseId + ": " + feedbackSessionName + " has invalid question numbers");
@@ -176,33 +173,11 @@ public final class FeedbackQuestionsLogic {
                 copiableQuestions.addAll(questions);
             }
         }
-        Collections.sort(copiableQuestions, new Comparator<FeedbackQuestionAttributes>() {
-            @Override
-            public int compare(FeedbackQuestionAttributes q1, FeedbackQuestionAttributes q2) {
-                int order = q1.courseId.compareTo(q2.courseId);
-                if (order != 0) {
-                    return order;
-                }
 
-                order = q1.feedbackSessionName.compareTo(q2.feedbackSessionName);
-                if (order != 0) {
-                    return order;
-                }
-
-                FeedbackQuestionDetails q1Details = q1.getQuestionDetails();
-                FeedbackQuestionDetails q2Details = q2.getQuestionDetails();
-
-                String q1DisplayName = q1Details.getQuestionTypeDisplayName();
-                String q2DisplayName = q2Details.getQuestionTypeDisplayName();
-
-                order = q1DisplayName.compareTo(q2DisplayName);
-                if (order != 0) {
-                    return order;
-                }
-
-                return q1Details.getQuestionText().compareTo(q2Details.getQuestionText());
-            }
-        });
+        copiableQuestions.sort(Comparator.comparing((FeedbackQuestionAttributes question) -> question.courseId)
+                .thenComparing(question -> question.feedbackSessionName)
+                .thenComparing(question -> question.getQuestionDetails().getQuestionTypeDisplayName())
+                .thenComparing(question -> question.getQuestionDetails().getQuestionText()));
 
         return copiableQuestions;
     }
@@ -233,7 +208,7 @@ public final class FeedbackQuestionsLogic {
             questions.addAll(fqDb.getFeedbackQuestionsForGiverType(
                             feedbackSessionName, courseId, FeedbackParticipantType.INSTRUCTORS));
         }
-        Collections.sort(questions);
+        questions.sort(null);
         return questions;
     }
 
@@ -269,7 +244,7 @@ public final class FeedbackQuestionsLogic {
         questions.addAll(fqDb.getFeedbackQuestionsForGiverType(feedbackSessionName,
                 courseId, FeedbackParticipantType.SELF));
 
-        Collections.sort(questions);
+        questions.sort(null);
         return questions;
     }
 
@@ -308,7 +283,7 @@ public final class FeedbackQuestionsLogic {
                 fqDb.getFeedbackQuestionsForGiverType(
                         feedbackSessionName, courseId, FeedbackParticipantType.TEAMS));
 
-        Collections.sort(questions);
+        questions.sort(null);
         return questions;
     }
 
@@ -448,41 +423,11 @@ public final class FeedbackQuestionsLogic {
     }
 
     /**
-     * Checks if a question has been fully answered by a team.
-     * @return {@code True} if there are no more recipients to give feedback to for the given
-     * {@code teamName}. {@code False} if not.
-     */
-    public boolean isQuestionFullyAnsweredByTeam(FeedbackQuestionAttributes question,
-            String teamName) throws EntityDoesNotExistException {
-
-        List<StudentAttributes> studentsInTeam =
-                studentsLogic.getStudentsForTeam(question.courseId, teamName);
-
-        int numberOfPendingResponses =
-                question.numberOfEntitiesToGiveFeedbackTo;
-
-        if (numberOfPendingResponses == Const.MAX_POSSIBLE_RECIPIENTS) {
-            numberOfPendingResponses = getRecipientsForQuestion(question, teamName).size();
-        }
-
-        for (StudentAttributes student : studentsInTeam) {
-            List<FeedbackResponseAttributes> responses =
-                    frLogic.getFeedbackResponsesFromGiverForQuestion(question.getId(), student.email);
-            for (FeedbackResponseAttributes response : responses) {
-                if (response.giver.equals(student.email)) {
-                    numberOfPendingResponses -= 1;
-                }
-            }
-        }
-        return numberOfPendingResponses <= 0;
-    }
-
-    /**
      * Updates the feedback question number, shifts other questions up/down
      * depending on the change.
      */
     public void updateFeedbackQuestionNumber(FeedbackQuestionAttributes newQuestion)
-        throws InvalidParametersException, EntityDoesNotExistException {
+            throws InvalidParametersException, EntityDoesNotExistException {
 
         FeedbackQuestionAttributes oldQuestion =
                 fqDb.getFeedbackQuestion(newQuestion.getId());

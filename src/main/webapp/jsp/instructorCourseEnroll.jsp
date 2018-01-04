@@ -1,13 +1,10 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page pageEncoding="UTF-8" %>
 <%@ page import="teammates.common.util.Const" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="t" %>
 <%@ taglib tagdir="/WEB-INF/tags/instructor" prefix="ti" %>
 
-<c:set var="cssIncludes">
-  <link rel="stylesheet" href="/stylesheets/instructorCourseEnroll.css" type="text/css">
-</c:set>
 <c:set var="jsIncludes">
   <script type="text/javascript" src="/js/instructorCourseEnrollPage.js"></script>
 </c:set>
@@ -15,7 +12,7 @@
   <%=Const.ParamsNames.SESSION_TOKEN%>
 </c:set>
 
-<ti:instructorPage title="Enroll Students for ${data.courseId}" cssIncludes="${cssIncludes}" jsIncludes="${jsIncludes}">
+<ti:instructorPage title="Enroll Students for ${data.courseId}" jsIncludes="${jsIncludes}">
   <div class="instructionImg">
     <img src="/images/enrollInstructions.gif" class="img-responsive" border="0" >
   </div>

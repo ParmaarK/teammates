@@ -13,6 +13,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.google.appengine.api.datastore.Text;
+
 import teammates.common.datatransfer.FeedbackParticipantType;
 import teammates.common.datatransfer.FeedbackSessionResultsBundle;
 import teammates.common.datatransfer.attributes.AccountAttributes;
@@ -113,11 +115,7 @@ public class InstructorFeedbackResultsPageData extends PageData {
         // and load them by ajax question by question
         boolean isLoadingStructureOnly = questionToResponseMap.size() > 1;
 
-        for (Map.Entry<FeedbackQuestionAttributes, List<FeedbackResponseAttributes>>
-                     entry : questionToResponseMap.entrySet()) {
-            FeedbackQuestionAttributes question = entry.getKey();
-            List<FeedbackResponseAttributes> responses = entry.getValue();
-
+        questionToResponseMap.forEach((question, responses) -> {
             InstructorFeedbackResultsQuestionTable questionPanel;
             if (isLoadingStructureOnly) {
                 questionPanel = buildQuestionTableWithoutResponseRows(question, responses, "");
@@ -127,8 +125,7 @@ public class InstructorFeedbackResultsPageData extends PageData {
             }
 
             questionPanels.add(questionPanel);
-        }
-
+        });
     }
 
     private void initCommonVariables(InstructorAttributes instructor, String selectedSection,
@@ -614,7 +611,7 @@ public class InstructorFeedbackResultsPageData extends PageData {
             sectionPanel.setDisplayingTeamStatistics(isTeamDisplayingStatistics);
             sectionPanel.setSectionName(sectionName);
             sectionPanel.setSectionNameForDisplay(sectionName.equals(Const.DEFAULT_SECTION)
-                                                ? Const.NO_SPECIFIC_RECIPIENT
+                                                ? Const.NO_SPECIFIC_SECTION
                                                 : sectionName);
             break;
         case RECIPIENT_GIVER_QUESTION:
@@ -622,7 +619,7 @@ public class InstructorFeedbackResultsPageData extends PageData {
 
             sectionPanel.setSectionName(sectionName);
             sectionPanel.setSectionNameForDisplay(sectionName.equals(Const.DEFAULT_SECTION)
-                                                ? Const.NO_SPECIFIC_RECIPIENT
+                                                ? Const.NO_SPECIFIC_SECTION
                                                 : sectionName);
             break;
         default:
@@ -701,7 +698,7 @@ public class InstructorFeedbackResultsPageData extends PageData {
         sectionPanels = new LinkedHashMap<>();
 
         InstructorFeedbackResultsSectionPanel sectionPanel = new InstructorFeedbackResultsSectionPanel(
-                Const.DEFAULT_SECTION, Const.NO_SPECIFIC_RECIPIENT, true);
+                Const.DEFAULT_SECTION, Const.NO_SPECIFIC_SECTION, true);
         sectionPanels.put(Const.DEFAULT_SECTION, sectionPanel);
 
         for (String section : sections) {
@@ -913,7 +910,7 @@ public class InstructorFeedbackResultsPageData extends PageData {
             // If question specific sorting is not needed, responses are sorted
             // by default order (first by team name, then by display name)
             if (questionDetails.isQuestionSpecificSortingRequired()) {
-                Collections.sort(responseRows, questionDetails.getResponseRowsSortOrder());
+                responseRows.sort(questionDetails.getResponseRowsSortOrder());
             } else {
                 responseRows = InstructorFeedbackResultsResponseRow.sortListWithDefaultOrder(responseRows);
             }
@@ -1044,7 +1041,10 @@ public class InstructorFeedbackResultsPageData extends PageData {
         List<String> possibleReceiversWithoutResponsesForGiver = new ArrayList<>();
 
         String prevGiver = "";
-
+        int responseRecipientIndex = 0;
+        int responseGiverIndex = 0;
+        int userIndex = 0;
+        Map<String, Integer> userIndexesForComments = new HashMap<String, Integer>();
         for (FeedbackResponseAttributes response : responses) {
             if (!bundle.isGiverVisible(response) || !bundle.isRecipientVisible(response)) {
                 possibleGiversWithoutResponses.clear();
@@ -1082,6 +1082,40 @@ public class InstructorFeedbackResultsPageData extends PageData {
                                                                        bundle.getResponseAnswerHtml(response, question),
                                                                        moderationButton);
             configureResponseRow(prevGiver, response.recipient, responseRow);
+            String giverName = bundle.getNameForEmail(response.giver);
+            String recipientName = bundle.getNameForEmail(response.recipient);
+
+            String giverTeam = bundle.getTeamNameForEmail(response.giver);
+            String recipientTeam = bundle.getTeamNameForEmail(response.recipient);
+
+            giverName = bundle.appendTeamNameToName(giverName, giverTeam);
+            recipientName = bundle.appendTeamNameToName(recipientName, recipientTeam);
+
+            List<FeedbackResponseCommentRow> comments =
+                    buildResponseComments(giverName, recipientName, question, response);
+            if (!comments.isEmpty()) {
+                responseRow.setCommentsOnResponses(comments);
+            }
+            Map<FeedbackParticipantType, Boolean> responseVisibilityMap = getResponseVisibilityMap(question);
+            boolean isCommentsOnResponsesAllowed =
+                    question.getQuestionDetails().isCommentsOnResponsesAllowed();
+            if (isCommentsOnResponsesAllowed) {
+                FeedbackResponseCommentRow addCommentForm = buildFeedbackResponseCommentAddForm(question, response,
+                        responseVisibilityMap, giverName, recipientName);
+                responseRow.setAddCommentButton(addCommentForm);
+                if (userIndexesForComments.get(response.giver) == null) {
+                    userIndex = generateIndexForUser(response.giver, userIndex, userIndexesForComments);
+                }
+                responseGiverIndex = userIndexesForComments.get(response.giver);
+                if (userIndexesForComments.get(response.recipient) == null) {
+                    userIndex = generateIndexForUser(response.recipient, userIndex, userIndexesForComments);
+                }
+                responseRecipientIndex = userIndexesForComments.get(response.recipient);
+
+                responseRow.setResponseRecipientIndex(responseRecipientIndex);
+                responseRow.setResponseGiverIndex(responseGiverIndex);
+                responseRow.setCommentsOnResponsesAllowed(isCommentsOnResponsesAllowed);
+            }
             responseRows.add(responseRow);
         }
 
@@ -1458,9 +1492,11 @@ public class InstructorFeedbackResultsPageData extends PageData {
     private FeedbackResponseCommentRow buildFeedbackResponseCommentAddForm(FeedbackQuestionAttributes question,
                         FeedbackResponseAttributes response, Map<FeedbackParticipantType, Boolean> responseVisibilityMap,
                         String giverName, String recipientName) {
-        FeedbackResponseCommentAttributes frca =
-                new FeedbackResponseCommentAttributes(question.courseId, question.feedbackSessionName,
-                                                      question.getFeedbackQuestionId(), response.getId());
+        FeedbackResponseCommentAttributes frca = FeedbackResponseCommentAttributes
+                .builder(question.courseId, question.feedbackSessionName, "", new Text(""))
+                .withFeedbackResponseId(response.getId())
+                .withFeedbackQuestionId(question.getId())
+                .build();
 
         FeedbackParticipantType[] relevantTypes = {
                 FeedbackParticipantType.GIVER,
@@ -1744,6 +1780,11 @@ public class InstructorFeedbackResultsPageData extends PageData {
     // Only used for testing the ui
     public void setLargeNumberOfRespondents(boolean needAjax) {
         this.isLargeNumberOfRespondents = needAjax;
+    }
+
+    private int generateIndexForUser(String name, int index, Map<String, Integer> userIndexesForComments) {
+        userIndexesForComments.put(name, index + 1);
+        return index + 1;
     }
 
 }
